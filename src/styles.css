@@ -180,6 +180,15 @@ input:focus-visible {
   backdrop-filter: blur(14px);
 }
 
+.app-logo {
+  display: block;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 9px;
+  border-radius: 11px;
+  object-fit: cover;
+}
+
 .app-header h1 {
   margin: 0;
 }

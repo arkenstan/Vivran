@@ -16,6 +16,7 @@ describe('App', () => {
     expect(screen.getByText(/prism/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /use aurora theme/i })).toBeInTheDocument();
     expect(screen.getByRole('img', { name: /local audio file/i })).toBeInTheDocument();
+    expect(screen.getByAltText(/vivran logo/i)).toHaveAttribute('src', '/vivran-logo.png');
     expect(screen.getByText(/ready/i)).toBeInTheDocument();
   });
 

@@ -55,6 +55,7 @@ export function App() {
       >
         {!focusMode ? (
           <header className="app-header">
+            <img className="app-logo" src={`${import.meta.env.BASE_URL}vivran-logo.png`} alt="Vivran logo" />
             <h1>Vivran</h1>
           </header>
         ) : null}
