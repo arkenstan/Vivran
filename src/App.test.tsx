@@ -24,7 +24,7 @@ describe('App', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /enter focus mode/i }));
     expect(screen.queryByLabelText(/visualizer controls/i)).not.toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: /audio visualizer/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: /vivran/i })).not.toBeInTheDocument();
 
     fireEvent.keyDown(window, { key: 'Escape' });
     expect(screen.getByLabelText(/visualizer controls/i)).toBeInTheDocument();

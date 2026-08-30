@@ -1,4 +1,4 @@
-## Plan: Browser-First Audio Visualizer
+## Plan: Vivran Browser-First Audio Visualizer
 
 Build a React + TypeScript + Vite web MVP for Chromium-based browsers. The first release captures audio from a user-selected browser tab/window through `getDisplayMedia`, routes the stream into the Web Audio API, and renders responsive visual modes. Keep capture behind an `AudioSource` boundary so a later Electron shell can provide desktop/system loopback capture for Linux, Windows, and macOS without changing the analyzer or visualizer code.
 

@@ -55,7 +55,7 @@ export function App() {
       >
         {!focusMode ? (
           <header className="app-header">
-            <h1>Audio Visualizer</h1>
+            <h1>Vivran</h1>
           </header>
         ) : null}
         <VisualizerCanvas

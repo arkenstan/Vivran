@@ -1,4 +1,4 @@
-# Audio Visualizer Project Context
+# Vivran Project Context
 
 ## Product goal
 
