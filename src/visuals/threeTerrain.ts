@@ -63,18 +63,18 @@ export class ThreeTerrainRenderer {
     });
     this.renderer.setClearColor(0x020006, 1);
 
-    const segmentCount =
-      TERRAIN_ROWS * (TERRAIN_COLUMNS - 1) + (TERRAIN_ROWS - 1) * TERRAIN_COLUMNS;
+    const segmentCount = TERRAIN_ROWS * (TERRAIN_COLUMNS - 1) + (TERRAIN_ROWS - 1) * TERRAIN_COLUMNS;
     this.positions = new Float32Array(segmentCount * 2 * 3);
     this.colors = new Float32Array(segmentCount * 2 * 3);
 
     this.geometry.setAttribute('position', new BufferAttribute(this.positions, 3));
     this.geometry.setAttribute('color', new BufferAttribute(this.colors, 3));
     this.terrain.frustumCulled = false;
+    this.terrain.scale.setScalar(0.72);
     this.scene.add(this.terrain);
 
-    this.camera.position.set(0, 38, 76);
-    this.camera.lookAt(0, -8, -56);
+    this.camera.position.set(0, 62, 128);
+    this.camera.lookAt(0, -8, -68);
   }
 
   render(options: ThreeTerrainRenderOptions): void {
@@ -139,8 +139,7 @@ export class ThreeTerrainRenderer {
       }
 
       const average = total / (end - start) / 255;
-      this.heights[FAR_ROW * TERRAIN_COLUMNS + column] =
-        Math.min(1, average * sensitivity * amplitudeScale) ** 1.35;
+      this.heights[FAR_ROW * TERRAIN_COLUMNS + column] = Math.min(1, average * sensitivity * amplitudeScale) ** 1.35;
     }
   }
 

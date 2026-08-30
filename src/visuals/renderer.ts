@@ -219,11 +219,7 @@ function getSpectrumGradient(
 ): CanvasGradient {
   const key = `${preset.primary}:${preset.secondary}:${preset.accent}`;
 
-  if (
-    state.spectrumGradient &&
-    state.spectrumGradientHeight === size.height &&
-    state.spectrumGradientPreset === key
-  ) {
+  if (state.spectrumGradient && state.spectrumGradientHeight === size.height && state.spectrumGradientPreset === key) {
     return state.spectrumGradient;
   }
 
@@ -612,20 +608,14 @@ export function drawVisualizer(
       );
       return;
     case 'terrain':
+    case 'orb':
+    case 'galaxy':
       options.analyser.getByteFrequencyData(state.frequencyData);
       drawSpectrum(ctx, size, state.frequencyData, options.preset, options.settings.sensitivity, state);
       return;
     case 'blob':
       options.analyser.getByteFrequencyData(state.frequencyData);
-      drawBlob(
-        ctx,
-        size,
-        state.frequencyData,
-        options.preset,
-        options.settings.sensitivity,
-        currentTime,
-        state,
-      );
+      drawBlob(ctx, size, state.frequencyData, options.preset, options.settings.sensitivity, currentTime, state);
       return;
     case 'tunnel':
       options.analyser.getByteFrequencyData(state.frequencyData);
@@ -659,8 +649,7 @@ function ensureAudioBuffers(state: VisualizerRenderState, analyser: AnalyserNode
 function ensureParticles(state: VisualizerRenderState, size: CanvasSize): void {
   const needsInitialization = state.particles.length !== CONSTELLATION_PARTICLE_COUNT;
   const sizeChanged =
-    Math.abs(state.lastParticleWidth - size.width) > 16 ||
-    Math.abs(state.lastParticleHeight - size.height) > 16;
+    Math.abs(state.lastParticleWidth - size.width) > 16 || Math.abs(state.lastParticleHeight - size.height) > 16;
 
   if (needsInitialization) {
     state.particles = [];

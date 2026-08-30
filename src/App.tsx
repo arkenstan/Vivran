@@ -14,15 +14,7 @@ function getInitialReducedMotion(): boolean {
 }
 
 export function App() {
-  const {
-    analyser,
-    settings,
-    setSettings,
-    sourceState,
-    startDisplayCapture,
-    startFile,
-    stop,
-  } = useAudioEngine();
+  const { analyser, settings, setSettings, sourceState, startDisplayCapture, startFile, stop } = useAudioEngine();
   const [mode, setMode] = useState<VisualMode>('spectrum');
   const [presetId, setPresetId] = useState<VisualPresetId>('prism');
   const [reducedMotion, setReducedMotion] = useState(getInitialReducedMotion);
@@ -122,7 +114,6 @@ export function App() {
                 <Maximize2 size={20} aria-hidden="true" />
               </button>
             </div>
-
           </aside>
         </div>
       ) : null}

@@ -19,6 +19,8 @@ type AudioByteData = Uint8Array<ArrayBuffer>;
 
 const TERRAIN_COLUMNS = 128;
 const TERRAIN_ROWS = 64;
+const TERRAIN_WIDTH = 34;
+const TERRAIN_DEPTH = 40;
 const GALAXY_PARTICLE_COUNT = 512;
 
 interface ThreeVisualizerCanvasProps {
@@ -49,7 +51,12 @@ export function ThreeVisualizerCanvas({
   return (
     <Canvas
       className="visualizer-r3f"
-      camera={{ position: [0, 8, 16], fov: 52, near: 0.1, far: 180 }}
+      camera={{
+        position: mode === 'terrain' ? [0, 18, 34] : [0, 8, 16],
+        fov: 52,
+        near: 0.1,
+        far: 180,
+      }}
       dpr={[1, 1.5]}
       gl={{
         antialias: true,
@@ -97,13 +104,7 @@ export function ThreeVisualizerCanvas({
   );
 }
 
-export function GlowingOrbAnalyser({
-  analyser,
-  active,
-  preset,
-  settings,
-  reducedMotion,
-}: ThreeSceneProps) {
+export function GlowingOrbAnalyser({ analyser, active, preset, settings, reducedMotion }: ThreeSceneProps) {
   const meshRef = useRef<Mesh<IcosahedronGeometry, MeshStandardMaterial> | null>(null);
   const geometryRef = useRef<IcosahedronGeometry | null>(null);
   const materialRef = useRef<MeshStandardMaterial | null>(null);
@@ -161,9 +162,7 @@ export function GlowingOrbAnalyser({
         const baseY = basePositions[index + 1];
         const baseZ = basePositions[index + 2];
         const ripple =
-          Math.sin(baseX * 3.8 + time * 1.7) +
-          Math.sin(baseY * 4.2 + time * 1.1) +
-          Math.cos(baseZ * 3.4 + time * 1.4);
+          Math.sin(baseX * 3.8 + time * 1.7) + Math.sin(baseY * 4.2 + time * 1.1) + Math.cos(baseZ * 3.4 + time * 1.4);
         const displacement = 1 + Math.max(0, ripple / 3) * wobbleAmount;
 
         array[index] = baseX * displacement;
@@ -208,13 +207,7 @@ export function GlowingOrbAnalyser({
   );
 }
 
-export function TerrainSpectrogram({
-  analyser,
-  active,
-  preset,
-  settings,
-  reducedMotion,
-}: ThreeSceneProps) {
+export function TerrainSpectrogram({ analyser, active, preset, settings, reducedMotion }: ThreeSceneProps) {
   const meshRef = useRef<Mesh<PlaneGeometry, MeshStandardMaterial> | null>(null);
   const geometryRef = useRef<PlaneGeometry | null>(null);
   const materialRef = useRef<MeshStandardMaterial | null>(null);
@@ -278,7 +271,7 @@ export function TerrainSpectrogram({
     geometry.computeBoundingSphere();
 
     if (meshRef.current) {
-      meshRef.current.position.z = 7 + Math.sin(clock.elapsedTime * 0.65) * 0.12;
+      meshRef.current.position.z = 5 + Math.sin(clock.elapsedTime * 0.65) * 0.12;
     }
 
     if (materialRef.current) {
@@ -287,9 +280,9 @@ export function TerrainSpectrogram({
   });
 
   return (
-    <group position={[0, -4.2, 11]} rotation={[0.28, 0, 0]}>
+    <group position={[0, -3.7, 8]} rotation={[0.28, 0, 0]} scale={0.68}>
       <mesh ref={meshRef} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry ref={geometryRef} args={[56, 64, TERRAIN_COLUMNS - 1, TERRAIN_ROWS - 1]} />
+        <planeGeometry ref={geometryRef} args={[TERRAIN_WIDTH, TERRAIN_DEPTH, TERRAIN_COLUMNS - 1, TERRAIN_ROWS - 1]} />
         <meshStandardMaterial
           ref={materialRef}
           color={preset.primary}
@@ -305,13 +298,7 @@ export function TerrainSpectrogram({
   );
 }
 
-export function InstancedGalaxy({
-  analyser,
-  active,
-  preset,
-  settings,
-  reducedMotion,
-}: ThreeSceneProps) {
+export function InstancedGalaxy({ analyser, active, preset, settings, reducedMotion }: ThreeSceneProps) {
   const meshRef = useRef<InstancedMesh | null>(null);
   const materialRef = useRef<MeshPhysicalMaterial | null>(null);
   const frequencyDataRef = useRef<AudioByteData>(new Uint8Array(0));

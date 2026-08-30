@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react';
 import type { AnalyzerSettings } from '../audio/types';
+import { ThreeVisualizerCanvas } from './ThreeVisualizerCanvas';
 import { createVisualizerRenderState, drawVisualizer } from '../visuals/renderer';
+import { isThreeVisualMode } from '../visuals/types';
 import type { VisualMode, VisualPreset } from '../visuals/types';
 
 type AudioByteData = Uint8Array<ArrayBuffer>;
@@ -16,14 +18,7 @@ interface VisualizerCanvasProps {
   reducedMotion: boolean;
 }
 
-export function VisualizerCanvas({
-  analyser,
-  active,
-  mode,
-  preset,
-  settings,
-  reducedMotion,
-}: VisualizerCanvasProps) {
+export function VisualizerCanvas({ analyser, active, mode, preset, settings, reducedMotion }: VisualizerCanvasProps) {
   const surfaceRef = useRef<HTMLDivElement | null>(null);
   const canvas2dRef = useRef<HTMLCanvasElement | null>(null);
   const terrainCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -164,12 +159,22 @@ export function VisualizerCanvas({
 
   return (
     <div
-      className={`visualizer-surface ${mode === 'terrain' ? 'is-terrain-mode' : ''}`}
+      className={`visualizer-surface ${mode === 'terrain' ? 'is-terrain-mode' : ''} ${isThreeVisualMode(mode) ? 'is-three-mode' : ''}`}
       ref={surfaceRef}
       aria-label="Audio visualizer"
     >
       <canvas className="visualizer-canvas visualizer-canvas-2d" ref={canvas2dRef} />
       <canvas className="visualizer-canvas visualizer-canvas-terrain" ref={terrainCanvasRef} />
+      {isThreeVisualMode(mode) ? (
+        <ThreeVisualizerCanvas
+          analyser={analyser}
+          active={active}
+          mode={mode}
+          preset={preset}
+          settings={settings}
+          reducedMotion={reducedMotion}
+        />
+      ) : null}
     </div>
   );
 }
