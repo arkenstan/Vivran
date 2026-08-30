@@ -3,35 +3,28 @@ import { describe, expect, it } from 'vitest';
 import { App } from './App';
 
 describe('App', () => {
-  it('renders source and visual controls', () => {
+  it('renders source controls and hides visual controls until a source is active', () => {
     render(<App />);
 
     expect(screen.queryByText(/reactive signal monitor/i)).not.toBeInTheDocument();
 
     expect(screen.getByRole('button', { name: /share tab audio/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /choose audio file/i })).toBeInTheDocument();
-    expect(screen.getByRole('combobox', { name: /visualizer mode/i })).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: /spectrum/i })).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: /tunnel/i })).toBeInTheDocument();
-    expect(screen.getByText(/prism/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /use aurora theme/i })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: /source/i }).closest('.top-right-hud')).not.toBeNull();
+    expect(screen.queryByRole('combobox', { name: /visualizer mode/i })).not.toBeInTheDocument();
+    expect(screen.queryByText(/prism/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /use aurora theme/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /enter focus mode/i })).not.toBeInTheDocument();
     expect(screen.getByRole('img', { name: /local audio file/i })).toBeInTheDocument();
     expect(screen.getByAltText(/vivran logo/i)).toHaveAttribute('src', `${import.meta.env.BASE_URL}vivran-logo.png`);
+    expect(screen.getByText(/select an audio source to begin/i)).toBeInTheDocument();
     expect(screen.getByText(/ready/i)).toBeInTheDocument();
   });
 
-  it('hides chrome in focus mode and exits with escape or double click', () => {
+  it('keeps focus mode unavailable before a source is selected', () => {
     render(<App />);
 
-    fireEvent.click(screen.getByRole('button', { name: /enter focus mode/i }));
-    expect(screen.queryByLabelText(/visualizer controls/i)).not.toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: /vivran/i })).not.toBeInTheDocument();
-
-    fireEvent.keyDown(window, { key: 'Escape' });
-    expect(screen.getByLabelText(/visualizer controls/i)).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: /enter focus mode/i }));
-    fireEvent.doubleClick(screen.getByLabelText(/audio visualizer stage/i));
-    expect(screen.getByLabelText(/visualizer controls/i)).toBeInTheDocument();
+    fireEvent.keyDown(window, { key: 'f' });
+    expect(screen.queryByRole('button', { name: /enter focus mode/i })).not.toBeInTheDocument();
   });
 });

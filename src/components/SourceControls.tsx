@@ -6,6 +6,7 @@ import { AudioSourceStatus, type AudioSourceState } from '../audio/types';
 interface SourceControlsProps {
   sourceState: AudioSourceState;
   captureSupport: BrowserAudioCaptureSupport;
+  compact?: boolean;
   onShareAudio: () => void;
   onChooseFile: (file: File) => void;
   onStop: () => void;
@@ -14,6 +15,7 @@ interface SourceControlsProps {
 export function SourceControls({
   sourceState,
   captureSupport,
+  compact = false,
   onShareAudio,
   onChooseFile,
   onStop,
@@ -23,7 +25,7 @@ export function SourceControls({
   const active = sourceState.status === AudioSourceStatus.Active;
 
   return (
-    <section className="panel source-panel" aria-labelledby="source-heading">
+    <section className={`panel source-panel ${compact ? 'is-compact' : ''}`} aria-labelledby="source-heading">
       <div className="panel-heading">
         <h2 id="source-heading">Source</h2>
         <span

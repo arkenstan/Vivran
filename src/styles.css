@@ -89,6 +89,22 @@ input:focus-visible {
   inset: 0;
 }
 
+.empty-state {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  margin: 0;
+  padding: 12px 16px;
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  color: var(--text-muted);
+  background: rgba(10, 14, 20, 0.72);
+  font-size: 4rem;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
 .is-focus-mode .stage {
   padding: 0;
 }
@@ -122,7 +138,7 @@ input:focus-visible {
   align-items: flex-start;
   justify-content: flex-end;
   gap: 10px;
-  width: min(640px, calc(100vw - 36px));
+  /* width: min(640px, calc(100vw - 36px)); */
 }
 
 .left-visualization-controls {
@@ -172,6 +188,9 @@ input:focus-visible {
   top: 32px;
   left: 32px;
   z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   max-width: min(360px, calc(100vw - 64px));
   padding: 12px 14px;
   border: 1px solid var(--panel-border);
@@ -184,7 +203,6 @@ input:focus-visible {
   display: block;
   width: 42px;
   height: 42px;
-  margin-bottom: 9px;
   border-radius: 11px;
   object-fit: cover;
 }
@@ -226,6 +244,26 @@ input:focus-visible {
 .source-panel {
   flex: 0 1 190px;
   min-width: 176px;
+}
+
+.source-panel.is-compact {
+  min-width: 0;
+  padding: 7px;
+}
+
+.source-panel.is-compact .panel-heading {
+  display: none;
+}
+
+.source-panel.is-compact .source-actions {
+  gap: 4px;
+}
+
+.source-panel.is-compact .primary-action,
+.source-panel.is-compact .secondary-action,
+.source-panel.is-compact .icon-action {
+  width: 36px;
+  min-height: 36px;
 }
 
 .mode-panel {

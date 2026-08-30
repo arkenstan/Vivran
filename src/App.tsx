@@ -23,6 +23,7 @@ export function App() {
   const [focusMode, setFocusMode] = useState(false);
   const preset = useMemo(() => getPreset(presetId), [presetId]);
   const captureSupport = useMemo(() => getBrowserAudioCaptureSupport(), []);
+  const sourceActive = sourceState.status === AudioSourceStatus.Active;
 
   useEffect(() => {
     if (!focusMode) {
@@ -42,6 +43,33 @@ export function App() {
     };
   }, [focusMode]);
 
+  useEffect(() => {
+    const handleFocusShortcut = (event: KeyboardEvent): void => {
+      const target = event.target;
+
+      if (
+        event.key.toLowerCase() !== 'f' ||
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLSelectElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLButtonElement ||
+        (target instanceof HTMLElement && target.isContentEditable)
+      ) {
+        return;
+      }
+
+      if (sourceActive) {
+        setFocusMode(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleFocusShortcut);
+
+    return () => {
+      window.removeEventListener('keydown', handleFocusShortcut);
+    };
+  }, [sourceActive]);
+
   return (
     <main className={`app-shell ${focusMode ? 'is-focus-mode' : ''}`}>
       <section
@@ -59,6 +87,7 @@ export function App() {
             <h1>Vivran</h1>
           </header>
         ) : null}
+        {!sourceActive ? <p className="empty-state">Select an audio source to begin</p> : null}
         <VisualizerCanvas
           analyser={analyser}
           active={sourceState.status === AudioSourceStatus.Active}
@@ -70,13 +99,27 @@ export function App() {
       </section>
 
       {!focusMode ? (
-        <aside className="top-right-hud" aria-label="Status and color controls">
-          <ColorThemeSelector presetId={presetId} setPresetId={setPresetId} />
+        <aside className="top-right-hud" aria-label="Source, status, and color controls">
+          <SourceControls
+            sourceState={sourceState}
+            captureSupport={captureSupport}
+            compact={sourceActive}
+            onShareAudio={() => {
+              void startDisplayCapture();
+            }}
+            onChooseFile={(file) => {
+              void startFile(file);
+            }}
+            onStop={() => {
+              void stop();
+            }}
+          />
+          {sourceActive ? <ColorThemeSelector presetId={presetId} setPresetId={setPresetId} /> : null}
           <StatusPanel sourceState={sourceState} />
         </aside>
       ) : null}
 
-      {!focusMode ? (
+      {!focusMode && sourceActive ? (
         <aside className="left-visualization-controls" aria-label="Visualization controls">
           <VisualizationControls
             settings={settings}
@@ -91,31 +134,20 @@ export function App() {
         <div className="floating-controls">
           <aside id="visualizer-controls" className="control-rail" aria-label="Visualizer controls">
             <div className="toolbar-row toolbar-row-primary">
-              <SourceControls
-                sourceState={sourceState}
-                captureSupport={captureSupport}
-                onShareAudio={() => {
-                  void startDisplayCapture();
-                }}
-                onChooseFile={(file) => {
-                  void startFile(file);
-                }}
-                onStop={() => {
-                  void stop();
-                }}
-              />
-              <ModeSelector mode={mode} setMode={setMode} />
-              <button
-                type="button"
-                className="focus-action"
-                aria-label="Enter focus mode"
-                title="Enter focus mode"
-                onClick={() => {
-                  setFocusMode(true);
-                }}
-              >
-                <Maximize2 size={20} aria-hidden="true" />
-              </button>
+              {sourceActive ? <ModeSelector mode={mode} setMode={setMode} /> : null}
+              {sourceActive ? (
+                <button
+                  type="button"
+                  className="focus-action"
+                  aria-label="Enter focus mode"
+                  title="Enter focus mode"
+                  onClick={() => {
+                    setFocusMode(true);
+                  }}
+                >
+                  <Maximize2 size={20} aria-hidden="true" />
+                </button>
+              ) : null}
             </div>
           </aside>
         </div>
