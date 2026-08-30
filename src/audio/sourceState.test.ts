@@ -1,38 +1,39 @@
 import { describe, expect, it } from 'vitest';
 import { audioSourceReducer, initialAudioSourceState } from './sourceState';
+import { AudioErrorCategory, AudioSourceActionType, AudioSourceKind, AudioSourceStatus } from './types';
 
 describe('audioSourceReducer', () => {
   it('moves through request, active, and stopped states', () => {
-    const requesting = audioSourceReducer(initialAudioSourceState, { type: 'request' });
-    expect(requesting.status).toBe('requesting');
+    const requesting = audioSourceReducer(initialAudioSourceState, { type: AudioSourceActionType.Request });
+    expect(requesting.status).toBe(AudioSourceStatus.Requesting);
 
     const active = audioSourceReducer(requesting, {
-      type: 'activate',
+      type: AudioSourceActionType.Activate,
       meta: {
-        kind: 'display',
+        kind: AudioSourceKind.Display,
         label: 'Browser audio',
         startedAt: 1,
       },
     });
 
-    expect(active.status).toBe('active');
+    expect(active.status).toBe(AudioSourceStatus.Active);
     expect(active.meta?.label).toBe('Browser audio');
 
-    const stopped = audioSourceReducer(active, { type: 'stop' });
-    expect(stopped.status).toBe('stopped');
-    expect(stopped.meta?.kind).toBe('display');
+    const stopped = audioSourceReducer(active, { type: AudioSourceActionType.Stop });
+    expect(stopped.status).toBe(AudioSourceStatus.Stopped);
+    expect(stopped.meta?.kind).toBe(AudioSourceKind.Display);
   });
 
   it('stores user-facing errors', () => {
     const next = audioSourceReducer(initialAudioSourceState, {
-      type: 'error',
+      type: AudioSourceActionType.Error,
       error: {
-        category: 'permission-denied',
+        category: AudioErrorCategory.PermissionDenied,
         message: 'Capture permission was denied.',
       },
     });
 
-    expect(next.status).toBe('error');
-    expect(next.error?.category).toBe('permission-denied');
+    expect(next.status).toBe(AudioSourceStatus.Error);
+    expect(next.error?.category).toBe(AudioErrorCategory.PermissionDenied);
   });
 });

@@ -5,7 +5,7 @@ import { normalizeAudioError } from './errors';
 import { createFileAudioSource } from './fileSource';
 import { initialAudioSourceState, audioSourceReducer } from './sourceState';
 import { stopAudioSession } from './session';
-import type { AnalyzerSettings, AudioSourceSession } from './types';
+import { AudioSourceActionType, type AnalyzerSettings, type AudioSourceSession } from './types';
 
 export function useAudioEngine() {
   const [sourceState, dispatch] = useReducer(audioSourceReducer, initialAudioSourceState);
@@ -18,7 +18,7 @@ export function useAudioEngine() {
     sessionRef.current = null;
     setAnalyser(null);
     await stopAudioSession(currentSession);
-    dispatch({ type: 'stop' });
+    dispatch({ type: AudioSourceActionType.Stop });
   }, []);
 
   const replaceSession = useCallback(
@@ -29,7 +29,7 @@ export function useAudioEngine() {
       configureAnalyser(nextSession.analyser, settings);
       await stopAudioSession(previousSession);
       dispatch({
-        type: 'activate',
+        type: AudioSourceActionType.Activate,
         meta: {
           kind: nextSession.kind,
           label: nextSession.label,
@@ -41,7 +41,7 @@ export function useAudioEngine() {
   );
 
   const startDisplayCapture = useCallback(async () => {
-    dispatch({ type: 'request' });
+    dispatch({ type: AudioSourceActionType.Request });
 
     try {
       const session = await createDisplayAudioSource({
@@ -54,13 +54,13 @@ export function useAudioEngine() {
       await stopAudioSession(sessionRef.current);
       sessionRef.current = null;
       setAnalyser(null);
-      dispatch({ type: 'error', error: normalizeAudioError(error) });
+      dispatch({ type: AudioSourceActionType.Error, error: normalizeAudioError(error) });
     }
   }, [replaceSession, stop]);
 
   const startFile = useCallback(
     async (file: File) => {
-      dispatch({ type: 'request' });
+      dispatch({ type: AudioSourceActionType.Request });
 
       try {
         const session = await createFileAudioSource(file, {
@@ -73,7 +73,7 @@ export function useAudioEngine() {
         await stopAudioSession(sessionRef.current);
         sessionRef.current = null;
         setAnalyser(null);
-        dispatch({ type: 'error', error: normalizeAudioError(error) });
+        dispatch({ type: AudioSourceActionType.Error, error: normalizeAudioError(error) });
       }
     },
     [replaceSession, stop],

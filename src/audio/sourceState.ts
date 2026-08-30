@@ -1,43 +1,46 @@
-import type { AudioSourceError, AudioSourceMeta, AudioSourceState } from './types';
+import {
+  AudioSourceActionType,
+  AudioSourceStatus,
+  type AudioSourceError,
+  type AudioSourceMeta,
+  type AudioSourceState,
+} from './types';
 
 export type AudioSourceAction =
-  | { type: 'request' }
-  | { type: 'activate'; meta: AudioSourceMeta }
-  | { type: 'stop' }
-  | { type: 'error'; error: AudioSourceError };
+  | { type: AudioSourceActionType.Request }
+  | { type: AudioSourceActionType.Activate; meta: AudioSourceMeta }
+  | { type: AudioSourceActionType.Stop }
+  | { type: AudioSourceActionType.Error; error: AudioSourceError };
 
 export const initialAudioSourceState: AudioSourceState = {
-  status: 'idle',
+  status: AudioSourceStatus.Idle,
   meta: null,
   error: null,
 };
 
-export function audioSourceReducer(
-  state: AudioSourceState,
-  action: AudioSourceAction,
-): AudioSourceState {
+export function audioSourceReducer(state: AudioSourceState, action: AudioSourceAction): AudioSourceState {
   switch (action.type) {
-    case 'request':
+    case AudioSourceActionType.Request:
       return {
-        status: 'requesting',
+        status: AudioSourceStatus.Requesting,
         meta: null,
         error: null,
       };
-    case 'activate':
+    case AudioSourceActionType.Activate:
       return {
-        status: 'active',
+        status: AudioSourceStatus.Active,
         meta: action.meta,
         error: null,
       };
-    case 'stop':
+    case AudioSourceActionType.Stop:
       return {
-        status: 'stopped',
+        status: AudioSourceStatus.Stopped,
         meta: state.meta,
         error: null,
       };
-    case 'error':
+    case AudioSourceActionType.Error:
       return {
-        status: 'error',
+        status: AudioSourceStatus.Error,
         meta: null,
         error: action.error,
       };

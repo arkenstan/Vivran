@@ -1,13 +1,9 @@
 import { useEffect, useRef } from 'react';
 import type { AnalyzerSettings } from '../audio/types';
+import { APP_CONFIG } from '../config';
 import { ThreeVisualizerCanvas } from './ThreeVisualizerCanvas';
 import { createVisualizerRenderState, drawVisualizer } from '../visuals/renderer';
-import { isThreeVisualMode } from '../visuals/types';
-import type { VisualMode, VisualPreset } from '../visuals/types';
-
-type AudioByteData = Uint8Array<ArrayBuffer>;
-type ThreeTerrainRendererInstance = import('../visuals/threeTerrain').ThreeTerrainRenderer;
-type ThreeTerrainRendererConstructor = new (canvas: HTMLCanvasElement) => ThreeTerrainRendererInstance;
+import { isThreeVisualMode, VisualMode, type VisualPreset } from '../visuals/types';
 
 interface VisualizerCanvasProps {
   analyser: AnalyserNode | null;
@@ -21,12 +17,7 @@ interface VisualizerCanvasProps {
 export function VisualizerCanvas({ analyser, active, mode, preset, settings, reducedMotion }: VisualizerCanvasProps) {
   const surfaceRef = useRef<HTMLDivElement | null>(null);
   const canvas2dRef = useRef<HTMLCanvasElement | null>(null);
-  const terrainCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const renderStateRef = useRef(createVisualizerRenderState());
-  const terrainRendererRef = useRef<ThreeTerrainRendererInstance | null>(null);
-  const terrainConstructorRef = useRef<ThreeTerrainRendererConstructor | null>(null);
-  const terrainImportRef = useRef<Promise<void> | null>(null);
-  const terrainFrequencyDataRef = useRef<AudioByteData>(new Uint8Array(0));
   const propsRef = useRef({
     analyser,
     active,
@@ -48,10 +39,9 @@ export function VisualizerCanvas({ analyser, active, mode, preset, settings, red
   useEffect(() => {
     const surface = surfaceRef.current;
     const canvas = canvas2dRef.current;
-    const terrainCanvas = terrainCanvasRef.current;
     const context = canvas?.getContext('2d');
 
-    if (!surface || !canvas || !terrainCanvas || !context) {
+    if (!surface || !canvas || !context) {
       return undefined;
     }
 
@@ -77,7 +67,7 @@ export function VisualizerCanvas({ analyser, active, mode, preset, settings, red
       }
 
       const current = propsRef.current;
-      const interval = current.reducedMotion ? 140 : 16;
+      const interval = current.reducedMotion ? APP_CONFIG.reducedMotionIntervalMs : APP_CONFIG.renderIntervalMs;
 
       if (time - lastDraw >= interval) {
         const rect = surface.getBoundingClientRect();
@@ -87,58 +77,7 @@ export function VisualizerCanvas({ analyser, active, mode, preset, settings, red
           pixelRatio: window.devicePixelRatio || 1,
         };
 
-        if (current.mode === 'terrain' && current.active && current.analyser) {
-          try {
-            if (!terrainConstructorRef.current) {
-              terrainImportRef.current ??= import('../visuals/threeTerrain').then((module) => {
-                terrainConstructorRef.current = module.ThreeTerrainRenderer;
-              });
-              drawVisualizer(
-                context,
-                size,
-                {
-                  ...current,
-                  mode: 'spectrum',
-                },
-                renderStateRef.current,
-                time,
-              );
-            } else {
-              if (!terrainRendererRef.current) {
-                terrainRendererRef.current = new terrainConstructorRef.current(terrainCanvas);
-              }
-
-              if (terrainFrequencyDataRef.current.length !== current.analyser.frequencyBinCount) {
-                terrainFrequencyDataRef.current = new Uint8Array(current.analyser.frequencyBinCount);
-              }
-
-              current.analyser.getByteFrequencyData(terrainFrequencyDataRef.current);
-              terrainRendererRef.current.render({
-                frequencyData: terrainFrequencyDataRef.current,
-                preset: current.preset,
-                settings: current.settings,
-                width: size.width,
-                height: size.height,
-                pixelRatio: size.pixelRatio,
-                reducedMotion: current.reducedMotion,
-                currentTime: time,
-              });
-            }
-          } catch {
-            drawVisualizer(
-              context,
-              size,
-              {
-                ...current,
-                mode: 'spectrum',
-              },
-              renderStateRef.current,
-              time,
-            );
-          }
-        } else {
-          drawVisualizer(context, size, current, renderStateRef.current, time);
-        }
+        drawVisualizer(context, size, current, renderStateRef.current, time);
 
         lastDraw = time;
       }
@@ -152,19 +91,16 @@ export function VisualizerCanvas({ analyser, active, mode, preset, settings, red
       disposed = true;
       window.cancelAnimationFrame(frame);
       resizeObserver.disconnect();
-      terrainRendererRef.current?.dispose();
-      terrainRendererRef.current = null;
     };
   }, []);
 
   return (
     <div
-      className={`visualizer-surface ${mode === 'terrain' ? 'is-terrain-mode' : ''} ${isThreeVisualMode(mode) ? 'is-three-mode' : ''}`}
+      className={`visualizer-surface ${mode === VisualMode.Terrain ? 'is-terrain-mode' : ''} ${isThreeVisualMode(mode) ? 'is-three-mode' : ''}`}
       ref={surfaceRef}
       aria-label="Audio visualizer"
     >
       <canvas className="visualizer-canvas visualizer-canvas-2d" ref={canvas2dRef} />
-      <canvas className="visualizer-canvas visualizer-canvas-terrain" ref={terrainCanvasRef} />
       {isThreeVisualMode(mode) ? (
         <ThreeVisualizerCanvas
           analyser={analyser}

@@ -89,19 +89,6 @@ input:focus-visible {
   inset: 0;
 }
 
-.visualizer-canvas-terrain {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.is-terrain-mode .visualizer-canvas-2d {
-  opacity: 0;
-}
-
-.is-terrain-mode .visualizer-canvas-terrain {
-  opacity: 1;
-}
-
 .is-focus-mode .stage {
   padding: 0;
 }

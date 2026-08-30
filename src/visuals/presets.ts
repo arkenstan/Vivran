@@ -1,8 +1,8 @@
-import type { VisualPreset, VisualPresetId } from './types';
+import { VisualPresetId, type VisualPreset } from './types';
 
 export const VISUAL_PRESETS: VisualPreset[] = [
   {
-    id: 'prism',
+    id: VisualPresetId.Prism,
     label: 'Prism',
     background: '#08111f',
     primary: '#4fd1c5',
@@ -11,7 +11,7 @@ export const VISUAL_PRESETS: VisualPreset[] = [
     glow: 'rgba(79, 209, 197, 0.32)',
   },
   {
-    id: 'ember',
+    id: VisualPresetId.Ember,
     label: 'Ember',
     background: '#151110',
     primary: '#ff7043',
@@ -20,7 +20,7 @@ export const VISUAL_PRESETS: VisualPreset[] = [
     glow: 'rgba(255, 112, 67, 0.28)',
   },
   {
-    id: 'terminal',
+    id: VisualPresetId.Terminal,
     label: 'Terminal',
     background: '#09100d',
     primary: '#8aff80',
@@ -29,7 +29,7 @@ export const VISUAL_PRESETS: VisualPreset[] = [
     glow: 'rgba(138, 255, 128, 0.22)',
   },
   {
-    id: 'aurora',
+    id: VisualPresetId.Aurora,
     label: 'Aurora',
     background: '#061219',
     primary: '#2dd4bf',
@@ -38,7 +38,7 @@ export const VISUAL_PRESETS: VisualPreset[] = [
     glow: 'rgba(45, 212, 191, 0.3)',
   },
   {
-    id: 'citrus',
+    id: VisualPresetId.Citrus,
     label: 'Citrus',
     background: '#11140a',
     primary: '#bef264',
@@ -47,7 +47,7 @@ export const VISUAL_PRESETS: VisualPreset[] = [
     glow: 'rgba(190, 242, 100, 0.28)',
   },
   {
-    id: 'lagoon',
+    id: VisualPresetId.Lagoon,
     label: 'Lagoon',
     background: '#06151d',
     primary: '#22d3ee',
@@ -56,7 +56,7 @@ export const VISUAL_PRESETS: VisualPreset[] = [
     glow: 'rgba(34, 211, 238, 0.3)',
   },
   {
-    id: 'vapor',
+    id: VisualPresetId.Vapor,
     label: 'Vapor',
     background: '#130d1f',
     primary: '#c084fc',
@@ -65,7 +65,7 @@ export const VISUAL_PRESETS: VisualPreset[] = [
     glow: 'rgba(192, 132, 252, 0.3)',
   },
   {
-    id: 'magma',
+    id: VisualPresetId.Magma,
     label: 'Magma',
     background: '#160b0f',
     primary: '#fb7185',
@@ -74,7 +74,7 @@ export const VISUAL_PRESETS: VisualPreset[] = [
     glow: 'rgba(251, 113, 133, 0.3)',
   },
   {
-    id: 'glacier',
+    id: VisualPresetId.Glacier,
     label: 'Glacier',
     background: '#07111d',
     primary: '#93c5fd',
@@ -83,7 +83,7 @@ export const VISUAL_PRESETS: VisualPreset[] = [
     glow: 'rgba(147, 197, 253, 0.28)',
   },
   {
-    id: 'solar',
+    id: VisualPresetId.Solar,
     label: 'Solar',
     background: '#11110a',
     primary: '#fbbf24',
@@ -92,7 +92,7 @@ export const VISUAL_PRESETS: VisualPreset[] = [
     glow: 'rgba(251, 191, 36, 0.28)',
   },
   {
-    id: 'midnight',
+    id: VisualPresetId.Midnight,
     label: 'Midnight',
     background: '#070914',
     primary: '#818cf8',
@@ -101,7 +101,7 @@ export const VISUAL_PRESETS: VisualPreset[] = [
     glow: 'rgba(129, 140, 248, 0.3)',
   },
   {
-    id: 'candy',
+    id: VisualPresetId.Candy,
     label: 'Candy',
     background: '#160d18',
     primary: '#fb7185',

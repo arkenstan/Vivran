@@ -2,21 +2,9 @@ import { SlidersHorizontal } from 'lucide-react';
 import type { Dispatch, SetStateAction } from 'react';
 import { FFT_SIZE_OPTIONS } from '../audio/analyser';
 import type { AnalyzerSettings } from '../audio/types';
+import { VISUAL_MODE_OPTIONS } from '../config';
 import { VISUAL_PRESETS } from '../visuals/presets';
 import type { VisualMode, VisualPresetId } from '../visuals/types';
-
-const VISUAL_MODES: Array<{ id: VisualMode; label: string }> = [
-  { id: 'spectrum', label: 'Spectrum' },
-  { id: 'waveform', label: 'Waveform' },
-  { id: 'radial', label: 'Starburst' },
-  { id: 'oscilloscope', label: 'Scope' },
-  { id: 'constellation', label: 'Constellation' },
-  { id: 'blob', label: 'Blob' },
-  { id: 'tunnel', label: 'Tunnel' },
-  { id: 'orb', label: '3D Orb' },
-  { id: 'terrain', label: '3D Terrain' },
-  { id: 'galaxy', label: '3D Galaxy' },
-];
 
 interface ModeSelectorProps {
   mode: VisualMode;
@@ -35,10 +23,7 @@ interface ColorThemeSelectorProps {
   setPresetId: (preset: VisualPresetId) => void;
 }
 
-export function ModeSelector({
-  mode,
-  setMode,
-}: ModeSelectorProps) {
+export function ModeSelector({ mode, setMode }: ModeSelectorProps) {
   return (
     <section className="panel mode-panel" aria-labelledby="mode-heading">
       <div className="panel-heading">
@@ -48,7 +33,7 @@ export function ModeSelector({
       <label className="setting-group mode-setting">
         <span className="visually-hidden">Visualizer mode</span>
         <select value={mode} onChange={(event) => setMode(event.target.value as VisualMode)}>
-          {VISUAL_MODES.map((visualMode) => (
+          {VISUAL_MODE_OPTIONS.map((visualMode) => (
             <option key={visualMode.id} value={visualMode.id}>
               {visualMode.label}
             </option>
@@ -127,11 +112,7 @@ export function VisualizationControls({
         </label>
 
         <label className="toggle-row">
-          <input
-            type="checkbox"
-            checked={reducedMotion}
-            onChange={(event) => setReducedMotion(event.target.checked)}
-          />
+          <input type="checkbox" checked={reducedMotion} onChange={(event) => setReducedMotion(event.target.checked)} />
           <span>Reduced motion</span>
         </label>
       </div>

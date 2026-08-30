@@ -1,22 +1,24 @@
 import { Maximize2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { AudioSourceStatus } from './audio/types';
 import { SourceControls } from './components/SourceControls';
 import { ColorThemeSelector, ModeSelector, VisualizationControls } from './components/SettingsPanel';
 import { StatusPanel } from './components/StatusPanel';
 import { VisualizerCanvas } from './components/VisualizerCanvas';
 import { getBrowserAudioCaptureSupport } from './audio/browserSupport';
 import { useAudioEngine } from './audio/useAudioEngine';
+import { APP_CONFIG } from './config';
 import { getPreset } from './visuals/presets';
-import type { VisualMode, VisualPresetId } from './visuals/types';
+import { VisualMode, VisualPresetId } from './visuals/types';
 
 function getInitialReducedMotion(): boolean {
-  return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+  return window.matchMedia?.(APP_CONFIG.defaultReducedMotionQuery).matches ?? false;
 }
 
 export function App() {
   const { analyser, settings, setSettings, sourceState, startDisplayCapture, startFile, stop } = useAudioEngine();
-  const [mode, setMode] = useState<VisualMode>('spectrum');
-  const [presetId, setPresetId] = useState<VisualPresetId>('prism');
+  const [mode, setMode] = useState<VisualMode>(APP_CONFIG.defaultMode);
+  const [presetId, setPresetId] = useState<VisualPresetId>(APP_CONFIG.defaultPreset);
   const [reducedMotion, setReducedMotion] = useState(getInitialReducedMotion);
   const [focusMode, setFocusMode] = useState(false);
   const preset = useMemo(() => getPreset(presetId), [presetId]);
@@ -58,7 +60,7 @@ export function App() {
         ) : null}
         <VisualizerCanvas
           analyser={analyser}
-          active={sourceState.status === 'active'}
+          active={sourceState.status === AudioSourceStatus.Active}
           mode={mode}
           preset={preset}
           settings={settings}

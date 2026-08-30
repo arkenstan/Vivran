@@ -1,7 +1,7 @@
 import { FileAudio, Info, MonitorUp, Square } from 'lucide-react';
 import { useRef } from 'react';
 import type { BrowserAudioCaptureSupport } from '../audio/browserSupport';
-import type { AudioSourceState } from '../audio/types';
+import { AudioSourceStatus, type AudioSourceState } from '../audio/types';
 
 interface SourceControlsProps {
   sourceState: AudioSourceState;
@@ -19,8 +19,8 @@ export function SourceControls({
   onStop,
 }: SourceControlsProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const busy = sourceState.status === 'requesting';
-  const active = sourceState.status === 'active';
+  const busy = sourceState.status === AudioSourceStatus.Requesting;
+  const active = sourceState.status === AudioSourceStatus.Active;
 
   return (
     <section className="panel source-panel" aria-labelledby="source-heading">

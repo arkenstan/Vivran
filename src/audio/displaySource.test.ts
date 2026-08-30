@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createDisplayAudioCaptureOptions, createDisplayAudioSource } from './displaySource';
 import { stopAudioSession } from './session';
+import { AudioErrorCategory } from './types';
 
 function createTrack(kind: string, settings: MediaTrackSettings = {}) {
   const listeners = new Map<string, EventListener>();
@@ -96,10 +97,12 @@ describe('createDisplayAudioSource', () => {
       onEnded,
     });
 
-    expect(mediaDevices.getDisplayMedia).toHaveBeenCalledWith(expect.objectContaining({
-      audio: expect.any(Object),
-      video: expect.any(Object),
-    }));
+    expect(mediaDevices.getDisplayMedia).toHaveBeenCalledWith(
+      expect.objectContaining({
+        audio: expect.any(Object),
+        video: expect.any(Object),
+      }),
+    );
     expect(session.label).toBe('Shared tab audio');
     expect(audioContextMock.context.createMediaStreamSource).toHaveBeenCalledWith(stream);
     expect(audioContextMock.sourceNode.connect).toHaveBeenCalledWith(audioContextMock.analyser);
@@ -131,7 +134,7 @@ describe('createDisplayAudioSource', () => {
     });
 
     await expect(createDisplayAudioSource()).rejects.toMatchObject({
-      category: 'no-audio',
+      category: AudioErrorCategory.NoAudio,
     });
     expect(videoTrack.stop).toHaveBeenCalled();
   });

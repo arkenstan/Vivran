@@ -1,7 +1,7 @@
 import { configureAnalyser, DEFAULT_ANALYZER_SETTINGS } from './analyser';
 import { getBrowserAudioCaptureSupport } from './browserSupport';
 import { AudioSourceException } from './errors';
-import type { AudioSourceSession, SourceFactoryOptions } from './types';
+import { AudioErrorCategory, AudioSourceKind, type AudioSourceSession, type SourceFactoryOptions } from './types';
 
 type DisplaySurfaceHint = 'browser' | 'window' | 'monitor';
 type IncludeExcludeHint = 'include' | 'exclude';
@@ -63,14 +63,12 @@ export function createDisplayAudioCaptureOptions(
   };
 }
 
-export async function createDisplayAudioSource(
-  options: SourceFactoryOptions = {},
-): Promise<AudioSourceSession> {
+export async function createDisplayAudioSource(options: SourceFactoryOptions = {}): Promise<AudioSourceSession> {
   const mediaDevices = navigator.mediaDevices;
 
   if (!mediaDevices?.getDisplayMedia) {
     throw new AudioSourceException(
-      'unsupported',
+      AudioErrorCategory.Unsupported,
       'This browser does not support display audio capture.',
     );
   }
@@ -86,7 +84,7 @@ export async function createDisplayAudioSource(
 
     const support = getBrowserAudioCaptureSupport();
     throw new AudioSourceException(
-      'no-audio',
+      AudioErrorCategory.NoAudio,
       support.family === 'firefox'
         ? 'Firefox did not provide a tab audio track. Use Chrome/Edge for other-tab audio or choose a local audio file.'
         : 'The selected surface did not include audio. Choose a browser tab/window and enable audio in the share prompt.',
@@ -108,7 +106,7 @@ export async function createDisplayAudioSource(
   }
 
   return {
-    kind: 'display',
+    kind: AudioSourceKind.Display,
     label: getDisplayCaptureLabel(stream),
     stream,
     audioContext,

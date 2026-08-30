@@ -1,13 +1,30 @@
-export type SourceStatus = 'idle' | 'requesting' | 'active' | 'stopped' | 'error';
+export enum AudioSourceStatus {
+  Idle = 'idle',
+  Requesting = 'requesting',
+  Active = 'active',
+  Stopped = 'stopped',
+  Error = 'error',
+}
 
-export type AudioSourceKind = 'display' | 'file';
+export enum AudioSourceKind {
+  Display = 'display',
+  File = 'file',
+}
 
-export type AudioErrorCategory =
-  | 'unsupported'
-  | 'permission-denied'
-  | 'no-audio'
-  | 'playback-blocked'
-  | 'unknown';
+export enum AudioErrorCategory {
+  Unsupported = 'unsupported',
+  PermissionDenied = 'permission-denied',
+  NoAudio = 'no-audio',
+  PlaybackBlocked = 'playback-blocked',
+  Unknown = 'unknown',
+}
+
+export enum AudioSourceActionType {
+  Request = 'request',
+  Activate = 'activate',
+  Stop = 'stop',
+  Error = 'error',
+}
 
 export interface AudioSourceMeta {
   kind: AudioSourceKind;
@@ -22,7 +39,7 @@ export interface AudioSourceError {
 }
 
 export interface AudioSourceState {
-  status: SourceStatus;
+  status: AudioSourceStatus;
   meta: AudioSourceMeta | null;
   error: AudioSourceError | null;
 }

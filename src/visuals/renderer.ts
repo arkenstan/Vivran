@@ -1,5 +1,5 @@
 import type { AnalyzerSettings } from '../audio/types';
-import type { VisualMode, VisualPreset } from './types';
+import { VisualMode, type VisualPreset } from './types';
 
 const CONSTELLATION_PARTICLE_COUNT = 78;
 const CONSTELLATION_CONNECTION_DISTANCE = 112;
@@ -579,23 +579,23 @@ export function drawVisualizer(
   ensureAudioBuffers(state, options.analyser);
 
   switch (options.mode) {
-    case 'waveform':
+    case VisualMode.Waveform:
       options.analyser.getByteTimeDomainData(state.waveData);
       drawWaveform(ctx, size, state.waveData, options.preset, options.settings.sensitivity);
       return;
-    case 'spectrum':
+    case VisualMode.Spectrum:
       options.analyser.getByteFrequencyData(state.frequencyData);
       drawSpectrum(ctx, size, state.frequencyData, options.preset, options.settings.sensitivity, state);
       return;
-    case 'radial':
+    case VisualMode.Radial:
       options.analyser.getByteFrequencyData(state.frequencyData);
       drawRadialStarburst(ctx, size, state.frequencyData, options.preset, options.settings.sensitivity);
       return;
-    case 'oscilloscope':
+    case VisualMode.Oscilloscope:
       options.analyser.getByteTimeDomainData(state.waveData);
       drawNeonOscilloscope(ctx, size, state.waveData, options.preset, options.settings.sensitivity);
       return;
-    case 'constellation':
+    case VisualMode.Constellation:
       options.analyser.getByteFrequencyData(state.frequencyData);
       drawConstellation(
         ctx,
@@ -607,17 +607,17 @@ export function drawVisualizer(
         state,
       );
       return;
-    case 'terrain':
-    case 'orb':
-    case 'galaxy':
+    case VisualMode.Terrain:
+    case VisualMode.Orb:
+    case VisualMode.Galaxy:
       options.analyser.getByteFrequencyData(state.frequencyData);
       drawSpectrum(ctx, size, state.frequencyData, options.preset, options.settings.sensitivity, state);
       return;
-    case 'blob':
+    case VisualMode.Blob:
       options.analyser.getByteFrequencyData(state.frequencyData);
       drawBlob(ctx, size, state.frequencyData, options.preset, options.settings.sensitivity, currentTime, state);
       return;
-    case 'tunnel':
+    case VisualMode.Tunnel:
       options.analyser.getByteFrequencyData(state.frequencyData);
       drawTunnel(
         ctx,

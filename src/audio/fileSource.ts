@@ -1,13 +1,13 @@
 import { configureAnalyser, DEFAULT_ANALYZER_SETTINGS } from './analyser';
 import { AudioSourceException } from './errors';
-import type { AudioSourceSession, SourceFactoryOptions } from './types';
+import { AudioErrorCategory, AudioSourceKind, type AudioSourceSession, type SourceFactoryOptions } from './types';
 
 export async function createFileAudioSource(
   file: File,
   options: SourceFactoryOptions = {},
 ): Promise<AudioSourceSession> {
   if (!file.type.startsWith('audio/')) {
-    throw new AudioSourceException('unsupported', 'The selected file is not an audio file.');
+    throw new AudioSourceException(AudioErrorCategory.Unsupported, 'The selected file is not an audio file.');
   }
 
   const audioContext = options.audioContextFactory?.() ?? new AudioContext();
@@ -36,14 +36,14 @@ export async function createFileAudioSource(
     URL.revokeObjectURL(objectUrl);
     sourceNode.disconnect();
     throw new AudioSourceException(
-      'playback-blocked',
+      AudioErrorCategory.PlaybackBlocked,
       'The browser blocked local audio playback.',
       error,
     );
   }
 
   return {
-    kind: 'file',
+    kind: AudioSourceKind.File,
     label: file.name,
     audioContext,
     sourceNode,

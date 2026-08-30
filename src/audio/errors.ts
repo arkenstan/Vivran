@@ -1,4 +1,4 @@
-import type { AudioErrorCategory, AudioSourceError } from './types';
+import { AudioErrorCategory, type AudioSourceError } from './types';
 
 export class AudioSourceException extends Error {
   readonly category: AudioErrorCategory;
@@ -24,7 +24,7 @@ export function normalizeAudioError(error: unknown): AudioSourceError {
   if (error instanceof DOMException) {
     if (error.name === 'NotAllowedError' || error.name === 'SecurityError') {
       return {
-        category: 'permission-denied',
+        category: AudioErrorCategory.PermissionDenied,
         message: 'Capture permission was denied.',
         cause: error,
       };
@@ -32,7 +32,7 @@ export function normalizeAudioError(error: unknown): AudioSourceError {
 
     if (error.name === 'NotFoundError') {
       return {
-        category: 'no-audio',
+        category: AudioErrorCategory.NoAudio,
         message: 'No shareable audio source was found.',
         cause: error,
       };
@@ -41,14 +41,14 @@ export function normalizeAudioError(error: unknown): AudioSourceError {
 
   if (error instanceof Error) {
     return {
-      category: 'unknown',
+      category: AudioErrorCategory.Unknown,
       message: error.message,
       cause: error,
     };
   }
 
   return {
-    category: 'unknown',
+    category: AudioErrorCategory.Unknown,
     message: 'Audio capture failed.',
     cause: error,
   };

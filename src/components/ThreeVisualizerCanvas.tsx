@@ -13,15 +13,17 @@ import {
   type PlaneGeometry,
 } from 'three';
 import type { AnalyzerSettings } from '../audio/types';
-import type { ThreeVisualMode, VisualPreset } from '../visuals/types';
+import { THREE_CONFIG } from '../config';
+import { VisualMode, type ThreeVisualMode, type VisualPreset } from '../visuals/types';
 
 type AudioByteData = Uint8Array<ArrayBuffer>;
 
-const TERRAIN_COLUMNS = 128;
-const TERRAIN_ROWS = 64;
-const TERRAIN_WIDTH = 34;
-const TERRAIN_DEPTH = 40;
-const GALAXY_PARTICLE_COUNT = 512;
+const { terrain: TERRAIN_CONFIG, galaxy: GALAXY_CONFIG, canvas: CANVAS_CONFIG } = THREE_CONFIG;
+const TERRAIN_COLUMNS = TERRAIN_CONFIG.columns;
+const TERRAIN_ROWS = TERRAIN_CONFIG.rows;
+const TERRAIN_WIDTH = TERRAIN_CONFIG.width;
+const TERRAIN_DEPTH = TERRAIN_CONFIG.depth;
+const GALAXY_PARTICLE_COUNT = GALAXY_CONFIG.particleCount;
 
 interface ThreeVisualizerCanvasProps {
   analyser: AnalyserNode | null;
@@ -52,12 +54,12 @@ export function ThreeVisualizerCanvas({
     <Canvas
       className="visualizer-r3f"
       camera={{
-        position: mode === 'terrain' ? [0, 18, 34] : [0, 8, 16],
-        fov: 52,
-        near: 0.1,
-        far: 180,
+        position: mode === VisualMode.Terrain ? TERRAIN_CONFIG.camera.position : CANVAS_CONFIG.defaultCamera.position,
+        fov: mode === VisualMode.Terrain ? TERRAIN_CONFIG.camera.fov : CANVAS_CONFIG.defaultCamera.fov,
+        near: CANVAS_CONFIG.defaultCamera.near,
+        far: CANVAS_CONFIG.defaultCamera.far,
       }}
-      dpr={[1, 1.5]}
+      dpr={CANVAS_CONFIG.dpr}
       gl={{
         antialias: true,
         alpha: false,
@@ -69,7 +71,7 @@ export function ThreeVisualizerCanvas({
       <pointLight position={[0, 8, 8]} intensity={1.8} color={preset.primary} />
       <pointLight position={[-8, -2, -6]} intensity={0.8} color={preset.accent} />
 
-      {mode === 'orb' ? (
+      {mode === VisualMode.Orb ? (
         <GlowingOrbAnalyser
           analyser={analyser}
           active={active}
@@ -78,7 +80,7 @@ export function ThreeVisualizerCanvas({
           reducedMotion={reducedMotion}
         />
       ) : null}
-      {mode === 'terrain' ? (
+      {mode === VisualMode.Terrain ? (
         <TerrainSpectrogram
           analyser={analyser}
           active={active}
@@ -87,7 +89,7 @@ export function ThreeVisualizerCanvas({
           reducedMotion={reducedMotion}
         />
       ) : null}
-      {mode === 'galaxy' ? (
+      {mode === VisualMode.Galaxy ? (
         <InstancedGalaxy
           analyser={analyser}
           active={active}
