@@ -23,6 +23,7 @@ export function SourceControls({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const busy = sourceState.status === AudioSourceStatus.Requesting;
   const active = sourceState.status === AudioSourceStatus.Active;
+  const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
 
   return (
     <section className={`panel source-panel ${compact ? 'is-compact' : ''}`} aria-labelledby="source-heading">
@@ -42,9 +43,9 @@ export function SourceControls({
         <button
           type="button"
           className="primary-action"
-          disabled={busy || !captureSupport.canRequestDisplayCapture}
-          aria-label={captureSupport.buttonLabel}
-          title={captureSupport.buttonLabel}
+          disabled={busy || (!isTauri && !captureSupport.canRequestDisplayCapture)}
+          aria-label={isTauri ? 'Capture system audio' : captureSupport.buttonLabel}
+          title={isTauri ? 'Capture system audio' : captureSupport.buttonLabel}
           onClick={onShareAudio}
         >
           <MonitorUp size={20} aria-hidden="true" />

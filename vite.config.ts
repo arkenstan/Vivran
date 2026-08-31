@@ -10,4 +10,10 @@ export default defineConfig({
     setupFiles: './src/test/setup.ts',
     css: true,
   },
+  clearScreen: false,
+  server: {
+    port: 5173,
+    strictPort: true,
+  },
+  envPrefix: ['VITE_', 'TAURI_'],
 });

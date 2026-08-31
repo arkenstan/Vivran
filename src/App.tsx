@@ -16,7 +16,8 @@ function getInitialReducedMotion(): boolean {
 }
 
 export function App() {
-  const { analyser, settings, setSettings, sourceState, startDisplayCapture, startFile, stop } = useAudioEngine();
+  const { analyser, settings, setSettings, sourceState, startDisplayCapture, startDesktopCapture, startFile, stop } = useAudioEngine();
+  const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
   const [mode, setMode] = useState<VisualMode>(APP_CONFIG.defaultMode);
   const [presetId, setPresetId] = useState<VisualPresetId>(APP_CONFIG.defaultPreset);
   const [reducedMotion, setReducedMotion] = useState(getInitialReducedMotion);
@@ -105,7 +106,11 @@ export function App() {
             captureSupport={captureSupport}
             compact={sourceActive}
             onShareAudio={() => {
-              void startDisplayCapture();
+              if (isTauri) {
+                void startDesktopCapture();
+              } else {
+                void startDisplayCapture();
+              }
             }}
             onChooseFile={(file) => {
               void startFile(file);

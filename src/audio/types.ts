@@ -9,6 +9,7 @@ export enum AudioSourceStatus {
 export enum AudioSourceKind {
   Display = 'display',
   File = 'file',
+  Desktop = 'desktop',
 }
 
 export enum AudioErrorCategory {

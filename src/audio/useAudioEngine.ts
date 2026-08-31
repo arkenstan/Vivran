@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { configureAnalyser, DEFAULT_ANALYZER_SETTINGS } from './analyser';
 import { createDisplayAudioSource } from './displaySource';
+import { createDesktopAudioSource } from './desktopSource';
 import { normalizeAudioError } from './errors';
 import { createFileAudioSource } from './fileSource';
 import { initialAudioSourceState, audioSourceReducer } from './sourceState';
@@ -58,6 +59,24 @@ export function useAudioEngine() {
     }
   }, [replaceSession, stop]);
 
+  const startDesktopCapture = useCallback(async () => {
+    dispatch({ type: AudioSourceActionType.Request });
+
+    try {
+      const session = await createDesktopAudioSource({
+        onEnded: () => {
+          void stop();
+        },
+      });
+      await replaceSession(session);
+    } catch (error) {
+      await stopAudioSession(sessionRef.current);
+      sessionRef.current = null;
+      setAnalyser(null);
+      dispatch({ type: AudioSourceActionType.Error, error: normalizeAudioError(error) });
+    }
+  }, [replaceSession, stop]);
+
   const startFile = useCallback(
     async (file: File) => {
       dispatch({ type: AudioSourceActionType.Request });
@@ -98,6 +117,7 @@ export function useAudioEngine() {
     setSettings,
     sourceState,
     startDisplayCapture,
+    startDesktopCapture,
     startFile,
     stop,
   };
