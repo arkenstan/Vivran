@@ -76,9 +76,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CCACHE_DISABLE: "1"
         with:
-          tagName: ${{ github.event.release.tag_name || github.ref_name }}
-          releaseName: ${{ github.event.release.name || github.ref_name }}
-          releaseBody: ${{ github.event.release.body }}
-          releaseDraft: ${{ github.event.release.draft || false }}
-          prerelease: ${{ github.event.release.prerelease || false }}
+          releaseId: ${{ github.event.release.id }}
+          tagName: ${{ github.event.release.tag_name }}
           args: ${{ matrix.platform.args }}
