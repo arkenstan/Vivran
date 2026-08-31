@@ -31,7 +31,7 @@ function statusText(sourceState: AudioSourceState): string {
     case AudioSourceStatus.Idle:
       return 'Ready';
     case AudioSourceStatus.Requesting:
-      return 'Waiting for browser permission';
+      return 'Starting audio source';
     case AudioSourceStatus.Stopped:
       return 'Stopped';
     case AudioSourceStatus.Error:

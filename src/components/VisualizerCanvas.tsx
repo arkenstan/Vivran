@@ -3,7 +3,7 @@ import type { AnalyzerSettings } from '../audio/types';
 import { APP_CONFIG } from '../config';
 import { ThreeVisualizerCanvas } from './ThreeVisualizerCanvas';
 import { createVisualizerRenderState, drawVisualizer } from '../visuals/renderer';
-import { isThreeVisualMode, VisualMode, type VisualPreset } from '../visuals/types';
+import { isThreeVisualMode, type VisualMode, type VisualPreset } from '../visuals/types';
 
 interface VisualizerCanvasProps {
   analyser: AnalyserNode | null;
@@ -67,9 +67,10 @@ export function VisualizerCanvas({ analyser, active, mode, preset, settings, red
       }
 
       const current = propsRef.current;
+      const isCurrentThreeMode = isThreeVisualMode(current.mode);
       const interval = current.reducedMotion ? APP_CONFIG.reducedMotionIntervalMs : APP_CONFIG.renderIntervalMs;
 
-      if (time - lastDraw >= interval) {
+      if (!isCurrentThreeMode && time - lastDraw >= interval) {
         const rect = surface.getBoundingClientRect();
         const size = {
           width: rect.width,
@@ -96,7 +97,7 @@ export function VisualizerCanvas({ analyser, active, mode, preset, settings, red
 
   return (
     <div
-      className={`visualizer-surface ${mode === VisualMode.Terrain ? 'is-terrain-mode' : ''} ${isThreeVisualMode(mode) ? 'is-three-mode' : ''}`}
+      className={`visualizer-surface ${isThreeVisualMode(mode) ? 'is-three-mode' : ''}`}
       ref={surfaceRef}
       aria-label="Audio visualizer"
     >

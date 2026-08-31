@@ -1,4 +1,4 @@
-import { Maximize2 } from 'lucide-react';
+import { Expand, Maximize2, Minimize2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { AudioSourceStatus } from './audio/types';
 import { SourceControls } from './components/SourceControls';
@@ -8,6 +8,7 @@ import { VisualizerCanvas } from './components/VisualizerCanvas';
 import { getBrowserAudioCaptureSupport } from './audio/browserSupport';
 import { useAudioEngine } from './audio/useAudioEngine';
 import { APP_CONFIG } from './config';
+import { useFullscreen } from './useFullscreen';
 import { getPreset } from './visuals/presets';
 import { VisualMode, VisualPresetId } from './visuals/types';
 
@@ -17,7 +18,7 @@ function getInitialReducedMotion(): boolean {
 
 export function App() {
   const { analyser, settings, setSettings, sourceState, startDisplayCapture, startDesktopCapture, startFile, stop } = useAudioEngine();
-  const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
+  const isDesktopApp = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
   const [mode, setMode] = useState<VisualMode>(APP_CONFIG.defaultMode);
   const [presetId, setPresetId] = useState<VisualPresetId>(APP_CONFIG.defaultPreset);
   const [reducedMotion, setReducedMotion] = useState(getInitialReducedMotion);
@@ -25,6 +26,7 @@ export function App() {
   const preset = useMemo(() => getPreset(presetId), [presetId]);
   const captureSupport = useMemo(() => getBrowserAudioCaptureSupport(), []);
   const sourceActive = sourceState.status === AudioSourceStatus.Active;
+  const { isFullscreen, toggleFullscreen } = useFullscreen();
 
   useEffect(() => {
     if (!focusMode) {
@@ -104,9 +106,10 @@ export function App() {
           <SourceControls
             sourceState={sourceState}
             captureSupport={captureSupport}
+            primarySourceMode={isDesktopApp ? 'system-audio' : 'browser-tab'}
             compact={sourceActive}
             onShareAudio={() => {
-              if (isTauri) {
+              if (isDesktopApp) {
                 void startDesktopCapture();
               } else {
                 void startDisplayCapture();
@@ -140,6 +143,17 @@ export function App() {
           <aside id="visualizer-controls" className="control-rail" aria-label="Visualizer controls">
             <div className="toolbar-row toolbar-row-primary">
               {sourceActive ? <ModeSelector mode={mode} setMode={setMode} /> : null}
+              <button
+                type="button"
+                className="fullscreen-action"
+                aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+                title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+                onClick={() => {
+                  void toggleFullscreen();
+                }}
+              >
+                {isFullscreen ? <Minimize2 size={20} aria-hidden="true" /> : <Expand size={20} aria-hidden="true" />}
+              </button>
               {sourceActive ? (
                 <button
                   type="button"

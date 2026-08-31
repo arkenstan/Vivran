@@ -1,11 +1,14 @@
-import { FileAudio, Info, MonitorUp, Square } from 'lucide-react';
+import { FileAudio, Info, MonitorUp, Square, Volume2 } from 'lucide-react';
 import { useRef } from 'react';
 import type { BrowserAudioCaptureSupport } from '../audio/browserSupport';
 import { AudioSourceStatus, type AudioSourceState } from '../audio/types';
 
+export type PrimaryAudioSourceMode = 'browser-tab' | 'system-audio';
+
 interface SourceControlsProps {
   sourceState: AudioSourceState;
   captureSupport: BrowserAudioCaptureSupport;
+  primarySourceMode?: PrimaryAudioSourceMode;
   compact?: boolean;
   onShareAudio: () => void;
   onChooseFile: (file: File) => void;
@@ -15,6 +18,7 @@ interface SourceControlsProps {
 export function SourceControls({
   sourceState,
   captureSupport,
+  primarySourceMode = 'browser-tab',
   compact = false,
   onShareAudio,
   onChooseFile,
@@ -23,17 +27,21 @@ export function SourceControls({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const busy = sourceState.status === AudioSourceStatus.Requesting;
   const active = sourceState.status === AudioSourceStatus.Active;
-  const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
+  const isSystemAudioMode = primarySourceMode === 'system-audio';
+  const primaryLabel = isSystemAudioMode ? 'Use system audio' : captureSupport.buttonLabel;
+  const guidance = isSystemAudioMode
+    ? 'Capture system output from the desktop app. Microphone input is not used.'
+    : captureSupport.guidance;
 
   return (
     <section className={`panel source-panel ${compact ? 'is-compact' : ''}`} aria-labelledby="source-heading">
       <div className="panel-heading">
         <h2 id="source-heading">Source</h2>
         <span
-          className={`info-icon tab-audio-${captureSupport.tabAudio}`}
+          className={`info-icon tab-audio-${isSystemAudioMode ? 'supported' : captureSupport.tabAudio}`}
           role="img"
-          aria-label={captureSupport.guidance}
-          title={captureSupport.guidance}
+          aria-label={guidance}
+          title={guidance}
         >
           <Info size={16} aria-hidden="true" />
         </span>
@@ -43,12 +51,12 @@ export function SourceControls({
         <button
           type="button"
           className="primary-action"
-          disabled={busy || (!isTauri && !captureSupport.canRequestDisplayCapture)}
-          aria-label={isTauri ? 'Capture system audio' : captureSupport.buttonLabel}
-          title={isTauri ? 'Capture system audio' : captureSupport.buttonLabel}
+          disabled={busy || (!isSystemAudioMode && !captureSupport.canRequestDisplayCapture)}
+          aria-label={primaryLabel}
+          title={primaryLabel}
           onClick={onShareAudio}
         >
-          <MonitorUp size={20} aria-hidden="true" />
+          {isSystemAudioMode ? <Volume2 size={20} aria-hidden="true" /> : <MonitorUp size={20} aria-hidden="true" />}
         </button>
         <button
           type="button"

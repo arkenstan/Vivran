@@ -15,7 +15,7 @@ pub fn run() {
       Ok(())
     })
     .manage(audio::AudioState {
-        stream: Mutex::new(None),
+        capture: Mutex::new(None),
     })
     .invoke_handler(tauri::generate_handler![
         audio::start_audio_capture,

@@ -89,6 +89,10 @@ input:focus-visible {
   inset: 0;
 }
 
+.is-three-mode .visualizer-canvas-2d {
+  opacity: 0;
+}
+
 .empty-state {
   position: absolute;
   top: 50%;
@@ -149,7 +153,8 @@ input:focus-visible {
   width: min(280px, calc(100vw - 36px));
 }
 
-.focus-action {
+.focus-action,
+.fullscreen-action {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -164,7 +169,8 @@ input:focus-visible {
   cursor: pointer;
 }
 
-.focus-action:hover {
+.focus-action:hover,
+.fullscreen-action:hover {
   background: #1c2633;
 }
 
