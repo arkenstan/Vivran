@@ -1,53 +1,119 @@
+<p align="center">
+  <img src="public/vivran-logo.png" alt="Vivran logo" width="128" height="128">
+</p>
+
 # Vivran
 
-Vivran is a browser-first audio visualizer for Chromium-based browsers. It can capture audio from a user-selected browser tab, window, or screen through `getDisplayMedia`, then render responsive 2D and 3D visuals with the Web Audio API. A local audio-file source is included as a reliable fallback.
+Vivran is a reactive audio visualizer for browser and Linux desktop use. It can visualize shared browser-tab audio, local audio files, or system output audio from the Tauri desktop app.
+
+Try the web app: [Vivran](https://arkenstan.github.io/Vivran/)
 
 ## Features
 
-- Capture audio from a browser tab, window, or screen using the browser share dialog.
-- Use local audio files when browser audio capture is unavailable.
-- Visualize live audio with waveform, spectrum, radial starburst, oscilloscope, constellation, blob, and tunnel modes.
-- Use Three.js-powered 3D Orb, Terrain, and Galaxy visualizers.
-- Apply reactive color themes with bloom and emissive lighting.
-- Adjust sensitivity, smoothing, and FFT size.
-- Respect reduced-motion preferences and provide a focus mode for a distraction-free view.
-- Stop and restart sources safely with audio-track cleanup and clear permission/error feedback.
-- Deploy automatically to GitHub Pages through GitHub Actions.
+- Browser audio capture through `getDisplayMedia` in Chromium-based browsers.
+- Linux desktop system-output capture through Tauri and PipeWire loopback.
+- Local audio-file playback for reliable offline visualization.
+- 2D canvas visualizers: Spectrum, Waveform, Starburst, Scope, Constellation, Blob, and Tunnel.
+- 3D React Three Fiber visualizers: 3D Orb, 3D Terrain, and 3D Galaxy.
+- Color themes with live swatches.
+- Sensitivity, smoothing, FFT size, and reduced-motion controls.
+- Focus mode that hides app chrome and locks attention on the visualizer.
+- Fullscreen support in both browser and Tauri desktop builds.
+- Web favicon, PWA manifest icons, and generated Tauri desktop icons.
 
-## Setup
+## Requirements
+
+- Node.js and npm.
+- Rust and Cargo for desktop builds.
+- Linux desktop builds require the Tauri Linux prerequisites and PipeWire development/runtime packages for system audio capture.
+
+See Tauri's official prerequisites page for distro-specific Linux dependencies:
+
+https://v2.tauri.app/start/prerequisites/
+
+## Web Development
 
 ```bash
 npm install
 npm run dev
 ```
 
-The app must run in a secure context. `localhost` works for development.
+Open the local Vite URL shown in the terminal.
 
-## Scripts
+## Web Production Build
 
-- `npm run dev` starts the Vite dev server.
-- `npm run build` type-checks and builds production assets.
-- `npm run lint` runs ESLint.
-- `npm run test` runs the Vitest suite.
+```bash
+npm run build
+```
 
-## GitHub Pages
+The static web build is written to `dist/`.
 
-The repository includes a GitHub Actions workflow that builds and deploys the app to GitHub Pages whenever changes are pushed to `main`. In the repository settings, set **Pages > Source** to **GitHub Actions**.
+## Linux Desktop Development
 
-The Vite base path automatically becomes `/Vivran/` in GitHub Actions and remains `/` for local development. If the repository is renamed, update the `base` value in `vite.config.ts` to match the new repository name.
+```bash
+npm install
+npm run tauri -- dev
+```
 
-## Browser Support
+In the desktop app, use the speaker source button to capture system output audio. Microphone input is not used for the system-audio source.
 
-Chromium/Chrome and Edge are the reference browsers for other-tab audio. Use **Share tab audio**, choose a browser tab in the share prompt, and enable the audio option. The app asks the browser to prefer tab surfaces, exclude the visualizer's own tab, allow tab switching when available, and include audio.
+## Linux Desktop Production Build
 
-Firefox can expose screen sharing to web pages, but it does not currently provide other-tab audio tracks through the same normal web-page `getDisplayMedia` path. The app detects Firefox and explains that limitation in the source panel. Use Chrome/Edge for tab audio, or use the local-file source as a fallback.
+Build Debian and RPM packages:
 
-Browser audio capture requires a user gesture, a selected display surface, and the audio checkbox enabled in the browser's share prompt. Permission is requested per session and is never assumed to persist.
+```bash
+CCACHE_DISABLE=1 npx tauri build --bundles deb,rpm
+```
 
-## Capture Notes
+Outputs:
 
-The browser capture path requests both audio and video because shared-tab audio is tied to display capture. The app routes only audio into an `AnalyserNode`; it does not display or store the captured video track. Stopping from the app or from browser sharing controls releases all tracks and closes the Web Audio nodes.
+- `src-tauri/target/release/bundle/deb/`
+- `src-tauri/target/release/bundle/rpm/`
+- `src-tauri/target/release/app`
 
-## Future Desktop Direction
+To try all configured Linux bundle targets:
 
-The audio source boundary is designed so an Electron shell can later provide platform-specific desktop/system loopback capture without replacing the visualizer core. Linux capture should be evaluated with PipeWire and desktop portal behavior; Windows and macOS have their own permission and loopback constraints.
+```bash
+CCACHE_DISABLE=1 npm run tauri -- build
+```
+
+If AppImage bundling fails because of `linuxdeploy`, build `deb,rpm` explicitly as shown above.
+
+## Other Operating Systems
+
+This project is configured with Tauri, but only the Linux desktop build flow is documented here. For macOS, Windows, Android, or iOS packaging, follow Tauri's official distribution guide:
+
+https://v2.tauri.app/distribute/
+
+## Keyboard Shortcuts
+
+- `F`: enter focus mode when an audio source is active.
+- `Escape`: exit focus mode.
+- Double-click the visualizer while in focus mode to leave focus mode.
+
+Fullscreen is available from the toolbar button. Browser and operating-system fullscreen shortcuts, such as `F11` on many Linux/Windows environments, continue to be handled by the platform.
+
+## Useful Commands
+
+```bash
+npm run lint
+npm run test
+npm run build
+cargo check --manifest-path src-tauri/Cargo.toml
+```
+
+## Icons
+
+The app logo source is:
+
+```text
+public/vivran-logo.png
+```
+
+Regenerate Tauri desktop icons:
+
+```bash
+npx tauri icon public/vivran-logo.png
+```
+
+Web icons live in `public/` and are linked from `index.html`.
