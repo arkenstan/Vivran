@@ -1,4 +1,5 @@
 :root {
+  color-scheme: dark;
   color: #f4f7fb;
   background: #0d1218;
   font-family:
@@ -478,12 +479,19 @@ input[type='range'] {
 }
 
 select {
+  color-scheme: dark;
+  appearance: none;
   min-height: 40px;
   border: 1px solid var(--panel-border);
   border-radius: 8px;
   color: #f4f7fb;
   background: var(--field);
   padding: 0 10px;
+}
+
+select option {
+  color: #f4f7fb;
+  background: #151d27;
 }
 
 input[type='range'] {
