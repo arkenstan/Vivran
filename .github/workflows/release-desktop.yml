@@ -1,0 +1,84 @@
+name: Build Desktop Release
+
+on:
+  release:
+    types:
+      - created
+
+permissions:
+  contents: write
+
+jobs:
+  build-desktop:
+    name: Build ${{ matrix.platform.label }}
+    runs-on: ${{ matrix.platform.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - label: Linux
+            runner: ubuntu-22.04
+            args: --bundles deb,rpm
+          - label: Windows
+            runner: windows-latest
+            args: --bundles nsis
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            curl \
+            file \
+            clang \
+            libayatana-appindicator3-dev \
+            libpipewire-0.3-dev \
+            pkg-config \
+            librsvg2-dev \
+            libsoup-3.0-dev \
+            libspa-0.2-dev \
+            libssl-dev \
+            libwebkit2gtk-4.1-dev \
+            libxdo-dev \
+            rpm
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm run test
+
+      - name: Build and upload desktop bundles
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CCACHE_DISABLE: "1"
+        with:
+          tagName: ${{ github.event.release.tag_name || github.ref_name }}
+          releaseName: ${{ github.event.release.name || github.ref_name }}
+          releaseBody: ${{ github.event.release.body }}
+          releaseDraft: ${{ github.event.release.draft || false }}
+          prerelease: ${{ github.event.release.prerelease || false }}
+          args: ${{ matrix.platform.args }}

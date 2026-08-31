@@ -79,6 +79,15 @@ CCACHE_DISABLE=1 npm run tauri -- build
 
 If AppImage bundling fails because of `linuxdeploy`, build `deb,rpm` explicitly as shown above.
 
+## Release Builds
+
+GitHub Actions builds Linux and Windows desktop packages when a GitHub Release is created. The workflow is defined in `.github/workflows/release-desktop.yml` and uploads generated bundles to the release.
+
+Current release targets:
+
+- Linux: `.deb` and `.rpm`
+- Windows: NSIS installer
+
 ## Other Operating Systems
 
 This project is configured with Tauri, but only the Linux desktop build flow is documented here. For macOS, Windows, Android, or iOS packaging, follow Tauri's official distribution guide:
